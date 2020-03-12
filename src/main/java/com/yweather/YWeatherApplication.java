@@ -1,24 +1,30 @@
 package com.yweather;
 
+
+import com.yweather.api.service.GeocoderService;
+import com.yweather.exception.ConnectionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @RestController
 public class YWeatherApplication {
 
-	@RequestMapping("/")
-	String home() {
-		return "Hello World!";
-	}
+    @Autowired
+    private GeocoderService geocoderService;
 
-	public static void main(String[] args) {
-		SpringApplication.run(YWeatherApplication.class, args);
-	}
+    @RequestMapping("/")
+    String home() throws ConnectionException {
+        geocoderService.getCoordinates("B32424242");
+        return "Hello World!";
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(YWeatherApplication.class, args);
+    }
 
 }
