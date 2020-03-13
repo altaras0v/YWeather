@@ -27,7 +27,7 @@ public class GeocoderServiceImpl implements GeocoderService {
 
 
     @Override
-    public List<CoordinateDTO> getCoordinates(String city) throws ConnectionException {
+    public List<CoordinateDTO> getCoordinates(String city) throws ConnectionException, CityNotFoundException {
         URL obj;
         try {
             obj = new URL(GEOCODER_URL_NAME + geocoderKey + GEOCODER_URL_LOCATION + city);
@@ -52,7 +52,7 @@ public class GeocoderServiceImpl implements GeocoderService {
                 try {
                     coordinates = geocodeParser.parseCoordinate(response);
                 } catch (CityNotFoundException e) {
-                    e.printStackTrace();
+                    throw new CityNotFoundException("City is not found!");
                 }
 
                 System.out.println(response.toString());
@@ -60,8 +60,9 @@ public class GeocoderServiceImpl implements GeocoderService {
                 log.info("GET request not worked");
             }
         } catch (IOException e) {
-            throw new ConnectionException("");
+            throw new ConnectionException("Cannot connect to external api!");
         }
+
         return null;
     }
 }

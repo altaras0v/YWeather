@@ -1,8 +1,8 @@
 package com.yweather.exception.handler;
 
+import com.yweather.exception.CustomErrorResponse;
 import java.io.IOException;
-import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +17,17 @@ public class GlobalDefaultExceptionHandler {
     /**
      * Send entity with exception to view
      *
-     * @param e - exception that caught
+     * @param ex - exception that caught
      * @return ResponseEntity with exception
      */
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<Object> handleStorageConflict(Object e, NativeWebRequest request) {
-        log.info(e.toString());
-    /*    ExceptionResponseDTO exceptionResponseDTO = ExceptionResponseDTO.builder()
-                .message(e.getMessage())
-                .timestamp(new Date().getTime())
-                .build();*/
-       /* HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
-        if (nativeRequest != null) {
-            exceptionResponseDTO.setPath(nativeRequest.getRequestURI());
-        }*/
-        return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({IOException.class, RuntimeException.class})
+    public ResponseEntity<Object> handleStorageConflict(Exception ex, NativeWebRequest request) {
+        log.info(ex.toString());
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(ex.getMessage());
+        errors.setStatus(HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
 }
